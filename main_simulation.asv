@@ -1,0 +1,34 @@
+function main_simulation()
+clear;
+close all;
+
+    reload('./receiver_200.mat');
+
+    params = parameters();
+
+    received_data = receive_tof(params);
+   
+    [delays_theoretic, ] = path_delays(params);
+    disp('理论值：');
+    disp(sort(delays_theoretic))
+
+    disp('未消除pdd：');
+    estimate_paths_using_music(received_data, params);  % 使用MUSIC算法估计路径延迟
+    
+    received_data = pdd_remove(received_data, params);  % 消除PDD
+    disp('消除pdd：');
+    estimate_paths_using_music(received_data, params);  % 使用MUSIC算法估计路径延迟
+
+
+    % 将样本延迟转换为时间
+    % [direct_path_times, reflect_path_times] = convert_delays_to_times(direct_path_delays, reflect_path_delays, params);
+
+    % [direct_tof, reflected_tof] = calculate_theoretical_tof(params);
+
+    % 显示直接路径和反射路径的时间到达平均值
+    % disp('Average Direct Path Time-of-Flight (in seconds):');
+    % disp(mean(direct_path_times, 'omitnan'));  % 计算并显示平均值，忽略NaN值
+    % disp('Average Reflected Path Time-of-Flight (in seconds):');
+    % disp(mean(reflect_path_times, 'omitnan'));  % 计算并显示平均值，忽略NaN值
+
+end
