@@ -1,13 +1,14 @@
 function corrected_csi = pdd_remove(raw_csi, params)
     % pdd_remove函数用于消除PDD引起的误差。
-        
+    
     % 计算STO的线性拟合。
     f_sub = params.Bandwidth / params.N_subcarriers;  % 子载波间隔频率
     delta_f_list = (0:f_sub:f_sub*(params.N_subcarriers-1))';
     corrected_csi = zeros(size(raw_csi));
 
     % 遍历每个数据包
-    for i = 1:params.packet_length
+    % for i = 1:params.N_Tx
+    for i = 1:1
         % 提取当前数据包的CSI相位
         packet_csi = raw_csi(:, i);
         unwrapped_phase = unwrap(angle(packet_csi));  % 解包裹相位

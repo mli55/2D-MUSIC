@@ -1,4 +1,4 @@
-function [delays] = estimate_paths_using_music(received_data, params)
+function [delta_delays] = tof_test(received_data, params)
     % 计算协方差矩阵
     R = (received_data * received_data') / size(received_data, 2);
 
@@ -19,7 +19,7 @@ function [delays] = estimate_paths_using_music(received_data, params)
     delta_f_list = (0:params.N_subcarriers-1)' * f_sub;  % 根据子载波间隔频率计算序列
     
     % 初始化Omega_tau矩阵并计算
-    tau_list = linspace(-3e, 3e8, 500);  % 延迟列表
+    tau_list = linspace(-5e-8, 5e-8, 1000);  % 延迟列表
     Omega_tau = exp(-1i * 2 * pi * delta_f_list * tau_list);
     sv_projection = abs(noise_subspace' * Omega_tau).^2;
     P_music = 1 ./ sum(sv_projection, 1);  % 计算倒数并取绝对值
@@ -33,10 +33,12 @@ function [delays] = estimate_paths_using_music(received_data, params)
     P_peaks_idx = P_peaks_idx(I);
     P_peaks = P_peaks_sorted(1:params.N_signals);             % 提取前M个
     P_peaks_idx = P_peaks_idx(1:params.N_signals);
-    disp(sort(tau_list(P_peaks_idx)));
-    disp(abs(tau_list(P_peaks_idx(1)) - tau_list(P_peaks_idx(2))))
-
+    sort(tau_list(P_peaks_idx));
+    % disp(1e9*abs(tau_list(P_peaks_idx(2)) - tau_list(P_peaks_idx(1))));
+    delta_delays = abs(tau_list(P_peaks_idx(1)) - tau_list(P_peaks_idx(2:end)));
+    % disp(tau_list(P_peaks_idx));
     delays = tau_list(P_peaks_idx);
+    % P_music = P_music - P_music(1);
 
     % 绘图
     figure;

@@ -10,10 +10,9 @@ function received_data = receive_aoa(params, angles, transmitted_data)
     
     % 生成单行传输数据
     % transmitted_data = -1.8054;
-    
-    received_data = repmat(transmitted_data, params.N_signals, 1);
-    received_data = phi_theta * received_data;
-    % received_data = sum(received_data, 2);
+
+    received_data = phi_theta * transmitted_data;
+    received_data = sum(received_data, 2);
 
     % received_data = awgn(received_data, params.SNR, 'measured');
 end
