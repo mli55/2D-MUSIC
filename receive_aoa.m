@@ -6,6 +6,7 @@ function received_data = receive_aoa(params, angles, transmitted_data)
     
     % 计算每个延迟的相位因子
     phi_theta = exp(-1i * 2 * pi * delta_d_list * sin(theta') / params.lambda);
+    phi_theta(:, 2) = phi_theta(:, 2)*0.6;
     
     
     % 生成单行传输数据
@@ -15,5 +16,5 @@ function received_data = receive_aoa(params, angles, transmitted_data)
     received_data = phi_theta * received_data;
     % received_data = sum(received_data, 2);
 
-    % received_data = awgn(received_data, params.SNR, 'measured');
+    received_data = awgn(received_data, params.SNR, 'measured');
 end

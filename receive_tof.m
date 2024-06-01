@@ -11,8 +11,9 @@ function received_data = receive_tof(params, delays, transmitted_data)
     
     % Omega_tau = exp(-1i * 2 * pi * delta_f_list * (delays));
     Omega_tau = exp(-1i * 2 * pi * delta_f_list * (delays + t));
+    Omega_tau(:, 2) = Omega_tau(:, 2)*0.6;
     received_data = repmat(transmitted_data, params.N_signals, 1);
     received_data = Omega_tau * received_data;
-    % received_data = awgn(received_data, params.SNR, "measured");
+    received_data = awgn(received_data, params.SNR, "measured");
     % received_data = sum(received_data, 2);
 end

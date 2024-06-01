@@ -41,6 +41,7 @@ function music_2d(received_data, params)
     P_music = 1 ./ sum(sv_projection);
     P_MUSIC_max = max(P_music);
     P_MUSIC_dB = 10*log10(P_music/P_MUSIC_max);
+    P_MUSIC_dB=P_music;
     P_music = reshape(P_MUSIC_dB, params.search_space_tof, params.search_space_aoa); 
 
     % 绘制热力图

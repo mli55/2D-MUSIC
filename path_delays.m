@@ -15,7 +15,7 @@ function [delays, path_losses] = path_delays(params)
     end
     
     % 合并直接路径和反射路径的时延
-    delays = [d_direct / params.c, reflect_delays];
+    delays = [d_direct / params.c; reflect_delays];
 
     disp('理论路径长度（m）:')
     disp(delays*3e8)

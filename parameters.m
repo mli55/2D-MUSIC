@@ -12,7 +12,7 @@ function params = parameters()
     params.c = 3e8;                  % Speed of light (m/s)
     % Simulation Parameters
     params.SNR = 20;                 % Signal to noise ratio in dB
-    params.packet_length = 200;       % Length of OFDM packets (number of symbols)
+    params.packet_length = 50;       % Length of OFDM packets (number of symbols)
     params.Fs = 8000;                % Sampling frequency in Hz、
     params.Bandwidth = 125e6;
     params.lambda = params.c / params.f_c;
