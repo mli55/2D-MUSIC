@@ -24,7 +24,7 @@ else % Real
     received_data = permute(received_data, [3, 2, 1]);
 end
 
-% received_data = pdd_remove(params, received_data);
+received_data = pdd_remove(params, received_data);
 received_aoa = squeeze(received_data(1, :, :));
 received_tof = squeeze(received_data(:, 1, :));
 

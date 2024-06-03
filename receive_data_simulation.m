@@ -43,7 +43,7 @@ received_data = sum(signal_from_paths, 4);
 % Add path delay
 for k = 1:params.N_packets
     t_pdd = (100e-9 - 10e-9).*rand + 10e-9;
-    t_pdd = 0;
+    % t_pdd = 0;
     for i = 1:params.N_subcarriers
         received_data(i, :, k) = exp(-1i * 2 * pi * delta_f_list(i) * t_pdd) .* received_data(i, :, k);
     end
