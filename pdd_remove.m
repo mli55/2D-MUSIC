@@ -14,7 +14,7 @@ delta_f_list = (0:f_sub:f_sub*(params.N_subcarriers-1))';
 corrected_csi = zeros(size(raw_csi));
 
 % Iterate through each packet
-for k = 1:params.packet_length
+for k = 1:params.N_packets
     for i = 1:params.N_Tx
         % Extract CSI phase of the current packet
         packet_csi = raw_csi(:, i, k);

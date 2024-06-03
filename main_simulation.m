@@ -10,7 +10,7 @@ close all;
 
 % Set boolean variable flag
 flag = false;  % Use simulation data
-flag = true;   % Use real data
+% flag = true;   % Use real data
 
 params = parameters();
     
@@ -24,11 +24,11 @@ else % Real
     received_data = permute(received_data, [3, 2, 1]);
 end
 
-received_data = pdd_remove(params, received_data);
+% received_data = pdd_remove(params, received_data);
 received_aoa = squeeze(received_data(1, :, :));
 received_tof = squeeze(received_data(:, 1, :));
 
-combined_matrix = reshape(received_data, params.N_subcarriers * params.N_Tx, params.packet_length);
+combined_matrix = reshape(received_data, params.N_subcarriers * params.N_Tx, params.N_packets);
 
 estimate_aoa_music(received_aoa, params);
 estimate_tof_music(received_tof, params);
