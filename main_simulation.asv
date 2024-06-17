@@ -20,9 +20,9 @@ if flag == 0 % Simulation
     received_data = receive_data_simulation(params, delays, angles);
 else % Real
     reshaped_data = load('./receiver_200.mat').reshapedData;
-    received_data = squeeze(reshaped_data(:, :, 1, :)); % [packets, Tx, Subcarrier]
-    received_data = received_data(params.data_start_point:params.data_end_point, :, :); 
-    % received_data = permute(received_data, [3, 2, 1]);
+    received_data = squeeze(re)
+    received_data = reshaped_data(20:23, :, 1, :); %[packets, Tx, Rx, Subcarrier]
+    received_data = permute(received_data, [3, 2, 1]);
 end
 
 received_data = pdd_remove(params, received_data); % 看一下

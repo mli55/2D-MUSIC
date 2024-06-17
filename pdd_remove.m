@@ -4,6 +4,7 @@ function corrected_csi = pdd_remove(params, raw_csi)
 % Inputs:
 %   - params
 %   - raw_csi [params.N_subcarriers, params.N_Tx, params.packet_length]
+%   - raw_csi [params.packet_length, params.N_Tx, params.N_subcarriers]
 % Outputs:
 %   - corrected_csi [params.N_subcarriers, params.N_Tx, params.packet_length]
 % ----------------------------------------------
@@ -17,7 +18,7 @@ corrected_csi = zeros(size(raw_csi));
 for k = 1:params.N_packets
     for i = 1:params.N_Tx
         % Extract CSI phase of the current packet
-        packet_csi = raw_csi(:, i, k);
+        packet_csi = squeeze(raw_csi(k, i, :));
         unwrapped_phase = unwrap(angle(packet_csi));  % Unwrap phase
         
         % Define cost function
@@ -34,7 +35,7 @@ for k = 1:params.N_packets
         corrected_phase = unwrapped_phase + sto_phase_offset;
         
         % Construct corrected CSI
-        corrected_csi(:, i, k) = abs(packet_csi) .* exp(-1i * corrected_phase);
+        corrected_csi(k, i, :) = abs(packet_csi) .* exp(-1i * corrected_phase);
     end
 end
 end

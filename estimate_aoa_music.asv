@@ -18,7 +18,7 @@ eigenvalues = diag(D);
 [~, index] = sort(eigenvalues, 'descend');
 E = E(:, index);
 
-noise_subspace = E(:, params.N_signals:params.N_Tx);
+noise_subspace = E(:, 2:params.N_Tx);
 
 phi_list = linspace(-pi/2, pi/2, 1000)';  % Delay list
 
