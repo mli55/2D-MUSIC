@@ -2,7 +2,7 @@ function [delta_delays] = estimate_tof_music(received_data, params)
 % ----------------------------------------------
 % Estimates Time of Flight (ToF) using MUSIC algorithm
 % Inputs:
-%   - received_data [params.N_subcarriers, params.packet_length]
+%   - received_data [params.packet_length, params.N_subcarriers]
 %   - params
 % Outputs:
 %   - delta_delays [params.N_signals-1, 1]

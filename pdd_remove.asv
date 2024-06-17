@@ -40,8 +40,8 @@ for k = 1:params.N_packets
     
     % 应用相位校正
     sto_phase_offset = 2 * pi * delta_f_list * tau_estimate;
-    sto_phase_offset = repmat(sto_phase_offset, params.N_Tx, 1);  % 重复 N_Tx 次
-    corrected_phase = unwrapped_phase + sto_phase_offset';
+    delta_f_list_flat2 = repmat(delta_f_list, params.N_Tx, 1);  % 重复 N_Tx 次
+    corrected_phase = unwrapped_phase + reshape(sto_phase_offset, [params.N_subcarriers,params.N_Tx,]);
 
     % 构建校正后的 CSI
     corrected_csi(:, :, k) = abs(packet_csi) .* exp(-1i * corrected_phase);
