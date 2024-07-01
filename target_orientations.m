@@ -1,4 +1,4 @@
-function angles = target_orientations(params)
+function angles = target_orientations(params, flag)
 % ----------------------------------------------
 % Calculates the angles from Tx to Rx and each target
 % Inputs:
@@ -28,6 +28,10 @@ end
 
 % Convert angles from radians to degrees
 angles = rad2deg(angles);
+
+if params.flag_same_side == 1
+    angles(1) = [];
+end
 
 % Output angles
 disp('Angles from Tx to Rx and each target (degrees):');

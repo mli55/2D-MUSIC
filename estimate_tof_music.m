@@ -1,4 +1,4 @@
-function [delta_delays] = estimate_tof_music(received_data, params)
+function [P_peaks_idx] = estimate_tof_music(received_data, params, fig)
 % ----------------------------------------------
 % Estimates Time of Flight (ToF) using MUSIC algorithm
 % Inputs:
@@ -34,44 +34,33 @@ Omega_tau = exp(-1i * 2 * pi * delta_f_list * tau_list');
 sv_projection = abs(noise_subspace' * Omega_tau).^2;
 P_music = 1 ./ sum(sv_projection, 1);  % Compute reciprocal and take absolute value
 P_MUSIC_max = max(P_music);
-P_music = 10*log10(P_music/P_MUSIC_max);
+P_music_dB = 10*log10(P_music/P_MUSIC_max);
 
 % Extract peaks of MUSIC spectrum
-[P_peaks, P_peaks_idx] = findpeaks(P_music);
-
-% Extract the largest peaks
-[P_peaks_sorted, I] = sort(P_peaks, 'descend');
-
+[P_peaks, P_peaks_idx] = findpeaks(P_music_dB);  % Extract peaks
+[P_peaks, I] = sort(P_peaks, 'descend');  % Sort peaks in descending order
 P_peaks_idx = P_peaks_idx(I);
-P_peaks = P_peaks_sorted(1:params.N_signals);  % Extract top N signals
+P_peaks = P_peaks(1:params.N_signals);  % Extract top N signals
 P_peaks_idx = P_peaks_idx(1:params.N_signals);
-sort(tau_list(P_peaks_idx));
-delta_delays = abs(tau_list(P_peaks_idx(1)) - tau_list(P_peaks_idx(2:end)));
-delays = tau_list(P_peaks_idx);
 
-% Plotting
-figure; % Create new figure window
-plot(tau_list*3e8, P_music); % Plot the entire spectrum
-hold on; % Hold the plot for adding new layers
+
+% if fig
+figure;
+plot(tau_list*3e8, P_music_dB);
+hold on;
 
 % Mark the top N_Signals points
-[~, P_peaks_idx] = maxk(P_music, params.N_signals); % Get indices of maximum values
-P_peaks = P_music(P_peaks_idx); % Get maximum values
-
-% Mark these maximum points
 plot(tau_list(P_peaks_idx)*3e8, P_peaks, 'r.', 'MarkerSize', 25); % Mark with red circles
 
-% Add title and axis labels
 title('MUSIC Spectrum');
 xlabel('Delay (meter)');
 ylabel('P(tau)');
-
-% Add legend
 legend('Spectrum', 'Peaks');
 
-hold off; % Release the plot
-
+hold off; 
+P_peaks_idx = sort(P_peaks_idx);
 disp('Estimated path lengths (m):');
 disp(tau_list(P_peaks_idx)*3e8);
-
+% end
+P_peaks_idx = tau_list(P_peaks_idx);
 end

@@ -23,8 +23,11 @@ for i = 1:params.N_targets
     disp(d_reflect - d_direct);
 end
 
-% Combine direct path and reflection path delays
-delays = [d_direct / params.c; reflect_delays'];
+if params.flag_same_side == 0 % Combine direct path and reflection path delays
+    delays = [d_direct / params.c; reflect_delays'];
+else
+    delays = reflect_delays';
+end
 
 disp('Theoretical path lengths (m):');
 disp(delays * 3e8);
