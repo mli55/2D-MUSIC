@@ -73,21 +73,6 @@ To keep things tidy on a lab website you can adopt this structure in the repo:
 
 Move code into `src/`, move the `.mat` files into `data/`, and add one short script under `examples/` that loads `data/radar_200.mat` and produces a plot.
 
-## .gitignore for MATLAB
-
-Create a `.gitignore` file with the lines below.
-
-```
-# MATLAB
-*.asv
-*.m~
-*.mat
-*.mlx
-*.fig
-.DS_Store
-```
-
-Keep data in `data/` and add a `data/.gitkeep` if you plan to host large files elsewhere.
 
 ## Citing
 
