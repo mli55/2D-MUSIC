@@ -91,3 +91,50 @@ If this code helps your work please cite it. A simple BibTeX entry:
 ## Contact
 
 Open an issue or email the maintainer if you have questions or find bugs.
+
+## Array calibration extension
+
+Run `demo_array_calibration` for uncalibrated/calibrated 2D-MUSIC estimates.
+The demo uses known true calibration as a benchmark; it does not estimate
+unknown errors blindly. `main_simulation` defaults to an ideal array.
+
+`params.array_truth` controls simulation only. `params.array_calibration`
+controls the spatial manifold used by both MUSIC estimators. Each accepts:
+
+- `gain`: positive M-vector of channel amplitude gains.
+- `phase_deg`: M-vector of channel phase offsets in degrees.
+- `position_error_lambda`: M-vector of position errors along the ULA axis,
+  in carrier wavelengths.
+- `coupling`: M-by-M complex coupling matrix.
+- `matrix`: optional combined response H, overriding gain/phase/coupling.
+
+The convention is `b(theta)=diag(gain.*exp(1i*phase))*C*a(theta)`.
+Calibration modifies steering vectors, leaving additive white noise unchanged;
+no inverse correction of data is applied. The MUSIC spectrum is normalized by
+steering-vector energy. This narrowband spatial model assumes calibration is
+constant over the signal bandwidth and uses carrier-frequency positions.
+
+For real measurements, obtain complex array responses at known directions,
+remove the source amplitude/phase with a consistent reference, then call
+`params.array_calibration = estimate_array_calibration(params, angles_deg, B)`.
+At least M independent, well-conditioned directions are required. This fits
+the combined gain/phase/coupling matrix, not their individual factors. Unknown
+position or direction-dependent pattern errors cannot generally be represented
+exactly by a fixed matrix; supply independently measured position errors or
+extend the model with a measured manifold. Never use simulation truth as real
+calibration evidence.
+
+Packet-delay alignment is separately controlled by `align_packet_delays`
+(default false), and assumes a stable reference path. It is not antenna
+calibration. The standalone PDD routines are legacy code, not part of this
+calibration extension.
+
+The simulator now uses independent source snapshots and adds noise after
+array imperfections. MATLAB is required to run the included benchmark.
+
+Validation of this extension: `git diff --check` passed. An equivalent NumPy
+single-source calculation (true angle 20 degrees, range 4.5 m) gave 25 degrees
+without calibration and 20 degrees with known calibration; the combined matrix
+fit also passed. This checks the numerical formulation, not MATLAB execution.
+The MATLAB benchmark was attempted with R2025a but startup failed with MathWorks
+service error 5201, so MATLAB end-to-end execution remains unverified.

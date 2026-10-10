@@ -30,6 +30,11 @@ if params.flag_same_side == 0
     params.N_signals = params.N_targets + 1;
 else
     params.N_signals = params.N_targets;
+% Optional array imperfections. Empty structs give an ideal array.
+% Never copy truth into calibration for real data: use measured parameters.
+params.array_truth = struct();
+params.array_calibration = struct();
+params.align_packet_delays = false; % Enable only for data with packet timing drift.
 end
 
 
@@ -43,8 +48,8 @@ params.search_space_tof = 500; % distance space
 % Data Range Parameters
 % ===============================
 params.data_start_point = 1;
-params.data_end_point = 2;
-params.N_packets = 2;
+params.data_end_point = 200;
+params.N_packets = 200;
 
 % ===============================
 % OFDM Parameters
@@ -66,4 +71,9 @@ params.SNR = 20;                 % Signal to noise ratio in dB
 params.Fs = 8000;                % Sampling frequency in Hz
 params.Bandwidth = 125e6;
 
+% Optional array imperfections. Empty structs give an ideal array.
+% Never copy truth into calibration for real data: use measured parameters.
+params.array_truth = struct();
+params.array_calibration = struct();
+params.align_packet_delays = false; % Enable only for data with packet timing drift.
 end

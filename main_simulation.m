@@ -23,35 +23,27 @@ else % Real
     received_data = squeeze(reshaped_data(params.data_start_point:params.data_end_point, :, 1, :)); %[packets, Tx, Subcarrier]
     received_data = permute(received_data, [3, 2, 1]); % [Subcarrier, Tx, packets]
 end
+params.N_packets = size(received_data, 3);
 
-% unwrapped_phase = unwrap(angle(received_data), [], 1);  % 沿子载波维度展开相位
-% plot(angle(received_data(:, 2, 1)));
-
-% received_datai = pdd_remove(params, received_data);
-received_aoa = squeeze(received_data(6, :, :));
-estimate_aoa_music(received_aoa, params);
-P_peaks_idx = zeros(params.N_packets, params.N_signals);
-for i = 1:params.N_packets
-    received_tof = squeeze(received_data(:, :, i));
-    P_peaks_idx(i, :) = estimate_tof_music(received_tof, params, params.fig);
-end
-
-f_sub = params.Bandwidth / params.N_subcarriers;  
-delta_f_list = 0:f_sub:f_sub*(params.N_subcarriers-1);
-
-for i = 2:params.N_packets
-    diff = P_peaks_idx(i, 1) - P_peaks_idx(1, 1);
-    phase_offset = 2 * pi * delta_f_list * diff;
-    phase_offset = repmat(phase_offset, params.N_Tx, 1);  % 重复 N_Tx 次
-    unwrapped_phase = unwrap(angle(received_data(:, :, i)), [], 1);
-    corrected_phase = unwrapped_phase + phase_offset';
-    received_data(:, :, i) = abs(received_data(:, :, i)) .* exp(-1i * corrected_phase);
+% Optional common packet-delay alignment; not per-sensor calibration.
+if params.align_packet_delays
+    packet_delays = zeros(params.N_packets, 1);
+    for i = 1:params.N_packets
+        peaks = estimate_tof_music(received_data(:, :, i), params, false);
+        packet_delays(i) = peaks(1);
+    end
+    frequencies = (0:params.N_subcarriers-1)' * params.Bandwidth / params.N_subcarriers;
+    for i = 2:params.N_packets
+        dt = packet_delays(i) - packet_delays(1);
+        received_data(:, :, i) = received_data(:, :, i) .* exp(1i*2*pi*frequencies*dt);
+    end
 end
 
 combined_matrix = reshape(received_data, params.N_subcarriers * params.N_Tx, params.N_packets);
 
-estimate_aoa_music(received_aoa, params);
-estimate_tof_music(received_tof, params);
+if params.N_signals < params.N_Tx
+    estimate_aoa_music(reshape(received_data(6,:,:), params.N_Tx, []), params);
+end
 music_2d(combined_matrix, params);
 
 end

@@ -12,31 +12,31 @@ function received_data = receive_data_simulation(params, delays, angles)
 f_sub = params.Bandwidth / params.N_subcarriers;  % Subcarrier frequency interval
 delta_f_list = (0:params.N_subcarriers-1)' * f_sub;  % Frequency interval sequence
 
-d = params.antenna_distance * params.lambda;
-delta_d_list = (0:d:(params.N_Tx - 1) * d)'; 
-theta = angles * pi / 180;
 
-transmitted_data = randn(1, params.N_packets);
+transmitted_data = (randn(params.N_signals, params.N_packets) + ...
+    1i*randn(params.N_signals, params.N_packets))/sqrt(2);
 signal_from_paths = zeros(params.N_subcarriers, params.N_Tx, params.N_packets, params.N_signals);
 
 for i = 1:params.N_signals
     tof = delta_f_list * delays(i); % Time of Flight
-    aoa = delta_d_list * sin(theta(i)') / params.lambda; % Angle of Arrival
     
     % Merge ToF and AoA
     tmp1 = exp(-1i * 2 * pi * tof);
-    tmp2 = exp(-1i * 2 * pi * aoa);
+    spatial = array_response(params, angles(i), 'truth');
     tmp = zeros(params.N_subcarriers, params.N_Tx, params.N_packets);
     for j = 1:params.N_packets
-        tmp(:, :, j) = tmp1 * tmp2' * transmitted_data(j);
+        tmp(:, :, j) = tmp1 * spatial.' * transmitted_data(i, j);
     end
-    tmp = awgn(tmp, params.SNR, "measured");
+
     % if i ~= 1
     %     tmp = tmp * 0.3;
     % end
     signal_from_paths(:, :, :, i) = tmp;
 end
 received_data = sum(signal_from_paths, 4);
+noise_power = mean(abs(received_data(:)).^2) / 10^(params.SNR/10);
+received_data = received_data + sqrt(noise_power/2) * ...
+    (randn(size(received_data)) + 1i*randn(size(received_data)));
 
 % Add path delay
 for k = 1:params.N_packets

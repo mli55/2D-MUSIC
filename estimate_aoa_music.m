@@ -18,16 +18,14 @@ eigenvalues = diag(D);
 [~, index] = sort(eigenvalues, 'descend');
 E = E(:, index);
 
-noise_subspace = E(:, params.N_signals:params.N_Tx);
+assert(params.N_signals < params.N_Tx, 'AoA-only MUSIC needs fewer sources than antennas.');
+noise_subspace = E(:, params.N_signals+1:end);
 
 phi_list = linspace(-pi/2, pi/2, 1000)';  % Delay list
 
-d = params.antenna_distance;
-delta_d_list = (0:d:(params.N_Tx - 1) * d)'; 
-
-Omega = exp(-1i * 2 * pi * delta_d_list * sin(phi_list'));
+Omega = array_response(params, phi_list*180/pi);
 sv_projection = abs(noise_subspace' * Omega).^2;
-P_music = 1 ./ sum(sv_projection);  % Compute reciprocal and take absolute value
+P_music = sum(abs(Omega).^2, 1) ./ max(sum(sv_projection, 1), realmin);  % Compute reciprocal and take absolute value
 P_MUSIC_max = max(P_music);
 P_MUSIC_dB = 10*log10(P_music/P_MUSIC_max);
 
@@ -43,6 +41,7 @@ disp('Estimated AoA (degrees):');
 disp(phi_e);
 
 % Plotting
+if params.fig
 figure;
 plot(phi_list * 180 / pi, P_MUSIC_dB, 'k', 'LineWidth', 2);
 xlabel('\phi (deg)');
@@ -55,4 +54,5 @@ for idx = 1:params.N_signals
     text(phi_e(idx) + 3, P_peaks(idx), sprintf('%0.1f°', phi_e(idx)));
 end
 
+end
 end

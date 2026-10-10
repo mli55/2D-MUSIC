@@ -44,7 +44,8 @@ P_peaks = P_peaks(1:params.N_signals);  % Extract top N signals
 P_peaks_idx = P_peaks_idx(1:params.N_signals);
 
 
-% if fig
+if nargin < 3, fig = params.fig; end
+if fig
 figure;
 plot(tau_list*3e8, P_music_dB);
 hold on;
@@ -61,6 +62,6 @@ hold off;
 P_peaks_idx = sort(P_peaks_idx);
 disp('Estimated path lengths (m):');
 disp(tau_list(P_peaks_idx)*3e8);
-% end
+end
 P_peaks_idx = tau_list(P_peaks_idx);
 end
